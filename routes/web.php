@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\BlockController as AdminBlockController;
 use App\Http\Controllers\Api\ReservationTypeApiController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaymentController;
 
 
 
@@ -74,6 +75,10 @@ Route::prefix('store')->group(function () {
     Route::get('/{slug}', [StoreController::class, 'show'])->name('store.show');
     Route::post('/checkout', [StoreOrderController::class, 'store'])->name('store.checkout.store');
 });
+
+Route::post('/payment', [PaymentController::class, 'pay'])->name('payment.pay');
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
 Route::resource('/reservation-types', ReservationTypeController::class)
     ->except(['show'])
