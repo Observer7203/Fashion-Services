@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Session;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,13 +17,17 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     */
-    public function boot()
-    {
-        // Устанавливаем язык для всех запросов (и для Blade)
-        app()->setLocale(session('locale', config('app.locale')));
-        view()->composer('*', function ($view) {
-            $view->with('siteLang', session('locale', config('app.locale')));
-        });
-    }    
+     */public function boot(): void
+{
+    $locale = session('locale', config('app.locale'));
+
+    // Установка языка
+    app()->setLocale($locale);
+
+    // Передача текущего языка во все вьюшки
+    view()->composer('*', function ($view) use ($locale) {
+        $view->with('siteLang', $locale);
+    });
+}
+
 }

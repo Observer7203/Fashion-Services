@@ -23,6 +23,8 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\BlockController as AdminBlockController;
 use App\Http\Controllers\Api\ReservationTypeApiController;
 use App\Http\Controllers\PageController;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\App;
 
 
 
@@ -56,12 +58,13 @@ Route::get('/instagram', function () {
     return view('instagram');
 });
 
-Route::get('/set-lang/{lang}', function($lang) {
-    if (in_array($lang, ['ru','en'])) {
+Route::post('/set-lang', function (\Illuminate\Http\Request $request) {
+    $lang = $request->input('lang');
+    if (in_array($lang, ['en', 'ru'])) {
         session(['locale' => $lang]);
-        app()->setLocale($lang); // для немедленного применения
+        app()->setLocale($lang);
     }
-    return back();
+    return response()->json(['success' => true]);
 })->name('setlang');
 
 

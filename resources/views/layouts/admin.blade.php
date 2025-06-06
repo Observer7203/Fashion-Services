@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ isset($siteLang) ? $siteLang : app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Админка')</title>
@@ -168,54 +168,34 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6" style="padding: 30px;">
-    @php
-    $langs = [
-        'ru' => ['title' => 'RU'],
-        'en' => ['title' => 'EN'],
-    ];
-    $current = app()->getLocale();
-@endphp
+@php $currentLang = session('locale', config('app.locale')); @endphp
 
-<div class="relative" style="display:inline-block;">
-    <button id="langDropdownBtn" onclick="toggleLangDropdown()" style="padding:7px 22px 7px 16px; border-radius:8px; border:1.5px solid #ddd; background:#fff; font-weight:500; font-size:15px; display:flex;align-items:center;gap:9px;min-width:96px;">
-        {{-- SVG Globe --}}
-        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-icon lucide-globe">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-            <path d="M2 12h20"/>
-        </svg>
-        <span style="font-weight: 500; text-transform: uppercase;">{{ $langs[$current]['title'] }}</span>
-        <svg style="width:16px;height:16px; margin-left:6px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+<div style="position: fixed; top: 22px; right: 40px; z-index: 100;" x-data="{ open: false }" @click.away="open = false">
+    <button @click="open = !open"
+            class="border border-gray-200 rounded px-3 py-2 flex items-center text-sm font-semibold">
+        <svg ...></svg>
+        <span>{{ strtoupper($currentLang) }}</span>
     </button>
-    <div id="langDropdownMenu" style="display:none;position:absolute;top:40px;right:0;z-index:999;min-width:110px;box-shadow:0 4px 18px rgba(0,0,0,.13);background:#fff;border-radius:8px;border:1px solid #eee;">
-        @foreach($langs as $code => $lang)
-            @if($code !== $current)
-                <a href="{{ route('setlang', ['lang' => $code]) }}" style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:15px;color:#222;text-decoration:none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-icon lucide-globe">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-                        <path d="M2 12h20"/>
-                    </svg>
-                    {{ $lang['title'] }}
-                </a>
-            @endif
+
+    <div x-show="open" x-transition x-cloak
+         class="absolute right-0 top-10 bg-white border rounded shadow min-w-[80px]">
+        @foreach(['ru', 'en'] as $lang)
+            <button @click="
+                fetch('{{ route('setlang') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ lang: '{{ $lang }}' })
+                }).then(() => window.location.reload());
+            "
+            class="w-full text-left px-4 py-2 hover:bg-gray-100 {{ $currentLang === $lang ? 'bg-gray-50' : '' }}">
+                {{ strtoupper($lang) }}
+            </button>
         @endforeach
     </div>
 </div>
-
-<script>
-function toggleLangDropdown() {
-    var el = document.getElementById('langDropdownMenu');
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
-}
-window.addEventListener('click', function(e) {
-    var btn = document.getElementById('langDropdownBtn');
-    var menu = document.getElementById('langDropdownMenu');
-    if (!btn.contains(e.target) && !menu.contains(e.target)) {
-        menu.style.display = 'none';
-    }
-});
-</script>
 
         @yield('content')
     </main>
