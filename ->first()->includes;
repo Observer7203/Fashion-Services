@@ -1,0 +1,33 @@
+[90m= [39m[34;4mApp\Models\Tour[39;24m {#6382
+    [34mid[39m: [35m19[39m,
+    [34mtitle[39m: "[32m{"en":"Paris Fashion Week Tour","ru":"Тур по Неделе моды в Париже"}[39m",
+    [34mslug[39m: "[32mparis-fashion-week-tour[39m",
+    [34msubtitle[39m: "[32m{"en":"L'événement mode le plus attendu de l'année","ru":"L'événement mode le plus attendu de l'année"}[39m",
+    [34mshort_description[39m: "[32m{"en":"Experience Paris Fashion Week with access to top shows, private events, and personal shopping on Rue Saint-Honoré and Avenue Montaigne. Enjoy a styling masterclass, a photoshoot by the Eiffel Tower, and gourmet dining at Café de Flore. VIP service, visits to Palais Galliera and Musée Yves Saint Laurent, and gifts from Dior, Chanel, and Hermès are included. Limited availability.","ru":"Познакомьтесь с Неделей моды в Париже с доступом к лучшим показам, частным мероприятиям и персональному шопингу на улице Сент-Оноре и авеню Монтень. Насладитесь мастер-классом по стилю, фотосессией у Эйфелевой башни и изысканными блюдами в Café de Flore. Включены VIP-обслуживание, посещение Palais Galliera и Musée Yves Saint Laurent, а также подарки от Dior, Chanel и Hermès. Ограниченное количество."}[39m",
+    [34mdescription[39m: "[32m{"en":"Experience the glamour of Paris Fashion Week with exclusive access to Haute Couture and Prêt-à-Porter shows, invitations to private events and after-parties, personal shopping on Rue Saint-Honoré, Avenue Montaigne, and at Galeries Lafayette, a styling masterclass at a leading Parisian fashion house, and a professional photoshoot at iconic locations like the Eiffel Tower and Palais-Royal. Enjoy gourmet dining at Café de Flore and gifts from Dior, Chanel, and Hermès partners.\r\n\r\nWhether you choose our Exclusive, Express, or Street Style package, our dedicated team will ensure a seamless and luxurious journey from arrival to departure, making your Fashion Week experience unforgettable.","ru":"Почувствуйте гламур Парижской недели моды с эксклюзивным доступом к показам Haute Couture и Prêt-à-Porter, приглашениями на частные мероприятия и after-party, персональным шопингом на Rue Saint-Honoré, Avenue Montaigne и в Galeries Lafayette, мастер-классом по стилю в ведущем парижском доме моды и профессиональной фотосессией в таких знаковых местах, как Эйфелева башня и Пале-Рояль. Насладитесь изысканными блюдами в Café de Flore и подарками от партнеров Dior, Chanel и Hermès.\r\n\r\nНезависимо от того, выберете ли вы наш пакет Exclusive, Express или Street Style, наша преданная команда обеспечит вам плавное и роскошное путешествие от прибытия до отправления, сделав ваше пребывание на Неделе моды незабываемым."}[39m",
+    [34mprice[39m: "[32m3000.00[39m",
+    [34mis_active[39m: [35m1[39m,
+    [34mfaq[39m: "[32m{"en":[],"ru":[]}[39m",
+    [34mlocations[39m: [36mnull[39m,
+    [34mfrequencies[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2025-06-14 10:29:47[39m",
+    [34mupdated_at[39m: "[32m2025-06-14 10:29:47[39m",
+    [34mreservation_type_id[39m: [36mnull[39m,
+    [34mpackages[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6390
+      [34mall[39m: [
+        [34;4mApp\Models\TourPackage[39;24m {#6392
+          [34mid[39m: [35m19[39m,
+          [34mtour_id[39m: [35m19[39m,
+          [34mtitle[39m: "[32m{"en":"Exclusive package","ru":"Эксклюзивный пакет"}[39m",
+          [34mprice[39m: "[32m3000.00[39m",
+          [34mcurrency[39m: "[32m€[39m",
+          [34mcreated_at[39m: "[32m2025-06-14 10:29:47[39m",
+          [34mupdated_at[39m: "[32m2025-06-14 10:29:47[39m",
+          [34mincludes[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6385
+            [34mall[39m: [],
+          },
+        },
+      ],
+    },
+  }
+

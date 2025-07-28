@@ -123,7 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'driver' => env('SESSION_DRIVER', 'file'), // или 'database', если ты так сделал
 
 
 ];

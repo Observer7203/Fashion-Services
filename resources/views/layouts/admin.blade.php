@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Админка')</title>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" />
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="//unpkg.com/alpinejs" defer></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -101,44 +103,77 @@
             <span x-show="open">{{ $item['label'] }}</span>
         </a>
     @endforeach
-
+    
     {{-- Бронирование (подразделы) --}}
-    <div x-data="{ openSub: false }" class="mb-1">
-        <a href="#" @click.prevent="openSub = !openSub"
-           class="flex items-center py-2 px-3 rounded transition-all font-semibold text-black">
-            <i data-lucide="layers" class="w-5 h-5"></i>
-            <span x-show="open" class="ml-2">Бронирование</span>
-            <svg x-show="open" :class="openSub ? 'rotate-90' : ''" class="w-4 h-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" /></svg>
-        </a>
-        <div x-show="openSub" class="ml-7 mt-2 space-y-1" x-cloak>
-            @foreach($bookingMenu as $sub)
-                <a href="{{ route($sub['route']) }}"
-                   class="flex items-center py-1 px-2 rounded text-sm text-gray-700 hover:text-black">
-                    <i data-lucide="{{ $sub['icon'] }}" class="w-4 h-4"></i>
-                    <span x-show="open" class="ml-2">{{ $sub['label'] }}</span>
-                </a>
-            @endforeach
-        </div>
-    </div>
+<div x-data="{ openSub: false }" class="mb-1">
+    <a href="#" @click.prevent="openSub = !openSub"
+       class="flex items-center space-x-2 py-2 rounded transition-all duration-300 text-sm text-gray-600 "
+       :class="open ? 'justify-start px-3' : 'justify-center px-0'">
+        <i data-lucide="layers" class="w-5 h-5" style="stroke-width:1.2;color:black;"></i>
+        <span x-show="open" class="ml-2">Бронирование</span>
+        <svg x-show="open"
+             :class="openSub ? 'rotate-90' : ''"
+             class="w-4 h-4 ml-auto transition-transform duration-300"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M9 5l7 7-7 7" />
+        </svg>
+    </a>
 
-    {{-- Формы (подразделы) --}}
-    <div x-data="{ openSubForms: false }" class="mb-1">
-        <a href="#" @click.prevent="openSubForms = !openSubForms"
-           class="flex items-center py-2 px-3 rounded transition-all font-semibold text-black">
-            <i data-lucide="file-text" class="w-5 h-5"></i>
-            <span x-show="open" class="ml-2">Формы</span>
-            <svg x-show="open" :class="openSubForms ? 'rotate-90' : ''" class="w-4 h-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" /></svg>
-        </a>
-        <div x-show="openSubForms" class="ml-7 mt-2 space-y-1" x-cloak>
-            @foreach($formsMenu as $sub)
-                <a href="{{ route($sub['route']) }}"
-                   class="flex items-center py-1 px-2 rounded text-sm text-gray-700 hover:text-black">
-                    <i data-lucide="{{ $sub['icon'] }}" class="w-4 h-4"></i>
-                    <span x-show="open" class="ml-2">{{ $sub['label'] }}</span>
-                </a>
-            @endforeach
-        </div>
+    <div x-show="openSub"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="ml-7 mt-2 space-y-1"
+         x-cloak>
+        @foreach($bookingMenu as $sub)
+            <a href="{{ route($sub['route']) }}"
+               class="flex items-center space-x-2 py-2 rounded text-sm transition-all duration-300 text-gray-600 hover:text-black"
+               :class="open ? 'justify-start px-3' : 'justify-center px-0'">
+                <i data-lucide="{{ $sub['icon'] }}" class="w-5 h-5" style="stroke-width:1.2;color:black;"></i>
+                <span x-show="open">{{ $sub['label'] }}</span>
+            </a>
+        @endforeach
     </div>
+</div>
+
+{{-- Формы (подразделы) --}}
+<div x-data="{ openSubForms: false }" class="mb-1">
+    <a href="#" @click.prevent="openSubForms = !openSubForms"
+       class="flex items-center space-x-2 py-2 rounded transition-all duration-300 text-sm text-gray-600"
+       :class="open ? 'justify-start px-3' : 'justify-center px-0'">
+        <i data-lucide="file-text" class="w-5 h-5" style="stroke-width:1.2;color:black;"></i>
+        <span x-show="open" class="ml-2">Формы</span>
+        <svg x-show="open"
+             :class="openSubForms ? 'rotate-90' : ''"
+             class="w-4 h-4 ml-auto transition-transform duration-300"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M9 5l7 7-7 7" />
+        </svg>
+    </a>
+
+    <div x-show="openSubForms"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="ml-7 mt-2 space-y-1"
+         x-cloak>
+        @foreach($formsMenu as $sub)
+            <a href="{{ route($sub['route']) }}"
+               class="flex items-center space-x-2 py-2 rounded text-sm transition-all duration-300 text-gray-600 hover:text-black"
+               :class="open ? 'justify-start px-3' : 'justify-center px-0'">
+                <i data-lucide="{{ $sub['icon'] }}" class="w-5 h-5" style="stroke-width:1.2;color:black;"></i>
+                <span x-show="open">{{ $sub['label'] }}</span>
+            </a>
+        @endforeach
+    </div>
+</div>
+
 
     {{-- Прочее --}}
     @foreach($otherMenu as $item)
@@ -168,35 +203,53 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6" style="padding: 30px;">
-@php $currentLang = session('locale', config('app.locale')); @endphp
+        @php
+    $langs = ['ru' => 'RU', 'en' => 'EN'];
+    $current = app()->getLocale();
+    $path = request()->path();
+    $stripped = preg_replace('/^(ru|en)\//', '', $path);
+    $id = uniqid('langDrop_');
+@endphp
 
-<div style="position: fixed; top: 22px; right: 40px; z-index: 100;" x-data="{ open: false }" @click.away="open = false">
-    <button @click="open = !open"
-            class="border border-gray-200 rounded px-3 py-2 flex items-center text-sm font-semibold">
-        <svg ...></svg>
-        <span>{{ strtoupper($currentLang) }}</span>
+<div class="relative inline-block" style="position: absolute; top: 28px; right: 40px; z-index: 100;">
+    <button onclick="toggleLangDropdown('{{ $id }}')"
+        class="flex items-center px-2 py-1 border border-gray-300 rounded-lg bg-white shadow-sm font-semibold hover:bg-gray-50 transition-all gap-2 min-w-[80px]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
+        </svg>
+        {{ strtoupper($langs[$current]) }}
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-left:4px;"><path d="M6 9l6 6 6-6"/></svg>
     </button>
-
-    <div x-show="open" x-transition x-cloak
-         class="absolute right-0 top-10 bg-white border rounded shadow min-w-[80px]">
-        @foreach(['ru', 'en'] as $lang)
-            <button @click="
-                fetch('{{ route('setlang') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ lang: '{{ $lang }}' })
-                }).then(() => window.location.reload());
-            "
-            class="w-full text-left px-4 py-2 hover:bg-gray-100 {{ $currentLang === $lang ? 'bg-gray-50' : '' }}">
-                {{ strtoupper($lang) }}
-            </button>
+    <div id="{{ $id }}" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow hidden z-50 min-w-[80px] animate-fade-in">
+        @foreach($langs as $code => $label)
+            @if($code !== $current)
+                <a href="/{{ $code }}/{{ $stripped }}"
+                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    {{ $label }}
+                </a>
+            @endif
         @endforeach
     </div>
 </div>
 
+<script>
+function toggleLangDropdown(id) {
+    let el = document.getElementById(id);
+    el.classList.toggle('hidden');
+}
+window.addEventListener('click', function(e) {
+    document.querySelectorAll('[id^="langDrop_"]').forEach(function(menu) {
+        let btn = document.querySelector('[onclick*="' + menu.id + '"]');
+        if (btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+});
+</script>
+   
         @yield('content')
     </main>
     <style>

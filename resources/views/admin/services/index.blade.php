@@ -2,7 +2,6 @@
 
 @section('content')
 
-{{ app()->getLocale() }}
 
 <div class="container mx-auto max-w-7xl py-8">
     <div class="flex justify-between items-center mb-6">

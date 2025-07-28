@@ -11,8 +11,20 @@ class PageController extends Controller
     public function index()
     {
         $pages = Page::all();
+    
+        // Добавляем виртуальную "Главную страницу"
+        $homepage = (object)[
+            'id' => null,
+            'title' => 'Главная страница',
+            'status' => 'Активна',
+            'is_homepage' => true,
+        ];
+    
+        $pages->prepend($homepage);
+    
         return view('admin.pages.index', compact('pages'));
     }
+    
 
     public function edit(Page $page)
     {

@@ -28,14 +28,47 @@
         <div class="flex items-center space-x-6 menu-items">
             <a href="{{ route('home') }}">Главная</a>
             <a href="{{ route('about') }}">Обо мне</a>
-            <a href="{{ route('services') }}">Услуги</a>
-            <a href="{{ route('tours') }}">Туры</a>
+            <a href="{{ route('services', ['locale' => app()->getLocale()]) }}">Услуги</a>
+            <a href="{{ route('tours_2.index', ['locale' => app()->getLocale()]) }}">Туры</a>
             <a href="{{ route('events') }}">События</a>
             <a href="{{ route('store.index') }}" class="hover:underline">Магазин</a>
             <a href="{{ route('contacts') }}">Контакты</a>
         </div>
 
         <div class="flex items-center space-x-4">
+           <!-- Language Switcher Icon Only -->
+            <div class="relative" x-data="{ open: false }" style="display: inline-block;">
+                <button @click="open = !open"
+                        class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition"
+                        aria-label="Change language"
+                        type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-globe-icon lucide-globe">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                </button>
+                           @php
+                $params = request()->route()->parameters();
+
+                // Для страниц услуги гарантируй наличие нужного параметра!
+                if (isset($service)) {
+                    $params['slug'] = $service->slug ?? $service->id;
+                }
+                $params['locale'] = 'ru';
+            @endphp
+                <div x-show="open" @click.away="open = false"
+                    class="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-30" style="z-index: 3;">
+                    <a href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), array_merge(request()->route()->parameters(), ['locale' => 'ru'])) }}"
+                        class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ app()->getLocale() == 'ru' ? 'font-bold' : '' }}">Русский</a>
+                    <a href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), array_merge(request()->route()->parameters(), ['locale' => 'en'])) }}"
+                        class="block px-4 py-2 text-gray-700 hover:bg-gray-100 {{ app()->getLocale() == 'en' ? 'font-bold' : '' }}">English</a>        
+                </div>
+            </div>
+<!-- Для AlpineJS, если его нет — добавь <script src="//unpkg.com/alpinejs" defer></script> -->
             @auth
             <a style="top: 2px; position: relative; margin-right: 18px;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ request()->routeIs('home') ? '#ffffff' : '#313131' }}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></a>
                 <div class="relative" x-data="{ open: false }">

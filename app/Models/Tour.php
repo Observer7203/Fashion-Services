@@ -9,6 +9,8 @@ use App\Models\TourPackage;
 use App\Models\TourOption;
 use App\Models\TourPreference;
 use App\Models\TourSeason;
+use App\Models\ReservationType;
+use App\Models\Event;
 use Spatie\Translatable\HasTranslations;
 
 class Tour extends Model
@@ -17,7 +19,7 @@ class Tour extends Model
 
     public $translatable = [
         'title', 'subtitle', 'short_description', 'description',
-        'faq', 'locations'
+        'faq', 'locations', 'frequencies'
     ];
 
     protected $fillable = [
@@ -27,14 +29,9 @@ class Tour extends Model
         'short_description',
         'description',
         'price',
-        'packages',
-        'included',
-        'additional_options',
-        'individual_preferences',
         'faq',
         'locations',
-        'media',
-        'seasons',
+        'frequencies',
         'reservation_type_id',
     ];
 
@@ -45,12 +42,7 @@ class Tour extends Model
         'description' => 'json',
         'faq' => 'json',
         'locations' => 'json',
-        'packages' => 'array',
-        'included' => 'array',
-        'additional_options' => 'array',
-        'individual_preferences' => 'array',
-        'media' => 'array',
-        'seasons' => 'array',
+        'frequencies' => 'json',
     ];
 
     public function reservationType(): BelongsTo
@@ -58,26 +50,58 @@ class Tour extends Model
         return $this->belongsTo(ReservationType::class);
     }
 
+        public function product()
+    {
+        return $this->hasOne(\App\Models\Product::class);
+    }
+
+
     public function packages() { return $this->hasMany(TourPackage::class); }
     public function options() { return $this->hasMany(TourOption::class); }
     public function preferences() { return $this->hasMany(TourPreference::class); }
     public function seasons() { return $this->hasMany(TourSeason::class); }
     public function media() { return $this->hasMany(TourMedia::class); }
     public function events() { return $this->belongsToMany(Event::class); }
+    public function mainImage()  { return $this->hasOne(TourMedia::class)->where('role', 'main_image'); }
+    public function mainVideo()  { return $this->hasOne(TourMedia::class)->where('role', 'main_video'); }
+    public function banner()     { return $this->hasOne(TourMedia::class)->where('role', 'banner'); }
+    public function breadcrumbsBg() { return $this->hasOne(TourMedia::class)->where('role', 'breadcrumbs_bg'); }
+    public function gallery()    { return $this->hasMany(TourMedia::class)->where('role', 'gallery')->orderBy('sort'); }
+
+    public function getMainImageUrlAttribute(): ?string
+{
+    return optional($this->media->firstWhere('role', 'main_image'))?->url;
+}
+
+public function getMainVideoUrlAttribute(): ?string
+{
+    return optional($this->media->firstWhere('role', 'main_video'))?->url;
+}
+
+public function getBannerImageUrlAttribute(): ?string
+{
+    return optional($this->media->firstWhere('role', 'banner'))?->url;
+}
+
+public function getBreadcrumbsBgUrlAttribute(): ?string
+{
+    return optional($this->media->firstWhere('role', 'breadcrumbs_bg'))?->url;
+}
+
 
     public function calculateFullPrice(): float
     {
         $total = 0;
 
-        foreach ($this->packages as $package) {
+        foreach ($this->packages()->get() as $package) {
             $total += $package->price;
         }
 
-        foreach ($this->options as $option) {
+        foreach ($this->options()->get() as $option) {
             $total += $option->price;
         }
 
-        foreach ($this->preferences as $pref) {
+        foreach ($this->preferences()->get() as $pref) {
             $total += $pref->extra_cost;
         }
 

@@ -38,6 +38,11 @@ class Service extends Model
         return $this->belongsTo(ReservationType::class);
     }
 
+        public function product()
+    {
+        return $this->hasOne(\App\Models\Product::class);
+    }
+
     public function options(): HasMany
     {
         return $this->hasMany(ServiceAddon::class);
@@ -48,8 +53,9 @@ class Service extends Model
         return $this->hasMany(ServiceInclude::class);
     }
 
-    public function media()
+    public function mediaFiles()
     {
-        return $this->hasMany(ServiceMedia::class);
+        return $this->hasMany(\App\Models\ServiceMedia::class, 'service_id');
     }
+    
 }

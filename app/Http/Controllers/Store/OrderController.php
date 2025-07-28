@@ -18,7 +18,7 @@ class OrderController extends Controller
         $products = Product::whereIn('id', $ids)->get();
 
         if ($products->isEmpty()) {
-            return redirect()->route('store.bucket.index')->withErrors(['Корзина пуста']);
+            return redirect()->route('bucket.index')->withErrors(['Корзина пуста']);
         }
 
         return view('store.checkout', compact('products'));

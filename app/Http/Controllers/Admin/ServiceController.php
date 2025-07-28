@@ -40,6 +40,7 @@ class ServiceController extends Controller
         'currency' => 'required|string|max:3',
         'reservation_type_id' => 'nullable|exists:reservation_types,id',
         'media' => 'nullable|array',
+        'media.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,mp4,mkv,webm|max:51200', // макс 50МБ, можно изменить
         'options' => 'nullable|array',
         'options.*.title_en' => 'required_with:options|string|max:255',
         'options.*.title_ru' => 'required_with:options|string|max:255',
@@ -47,6 +48,13 @@ class ServiceController extends Controller
         'includes' => 'nullable|array',
         'includes.*.title_en' => 'required|string|max:255',
         'includes.*.title_ru' => 'required|string|max:255',
+        'media.main' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail1' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail2' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail3' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail4' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.banner' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.video' => 'nullable|file|mimes:mp4,webm,mkv|max:51200',
     ]);
 
     $service = new Service();
@@ -57,9 +65,31 @@ class ServiceController extends Controller
     $service->price = $data['price'];
     $service->currency = $data['currency'];
     $service->reservation_type_id = $data['reservation_type_id'] ?? null;
-    $service->media = $data['media'] ?? [];
-    $service->slug = Str::slug($data['title_en'] ?? $data['title_ru']);
-    $service->save();
+// Получаем slug или генерируем его из названия
+$slug = $data['slug'] ?? Str::slug($data['title_en'] ?? $data['title_ru']);
+if (empty($slug)) {
+    // Если slug после всех манипуляций пустой — ставим id
+    $slug = $service->id;
+}
+$service->slug = $slug;
+$service->save();
+
+    
+    // Медиа — сохраняем файлы и добавляем в service_media
+    if ($request->hasFile('media')) {
+        foreach ($request->file('media') as $type => $file) {
+            if ($file) {
+                $mediaType = $type === 'video' ? 'video' : 'image';
+                $filePath = $file->store('services', 'public');
+
+                $service->mediaFiles()->create([
+                    'type' => $type,
+                    'media_type' => $mediaType,
+                    'path' => $filePath,
+                ]);
+            }
+        }
+    }
 
     // options
     if (!empty($data['options'])) {
@@ -111,6 +141,7 @@ class ServiceController extends Controller
         'currency' => 'required|string|max:3',
         'reservation_type_id' => 'nullable|exists:reservation_types,id',
         'media' => 'nullable|array',
+        'media.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,mp4,mkv,webm|max:51200',
         'options' => 'nullable|array',
         'options.*.title_en' => 'required_with:options|string|max:255',
         'options.*.title_ru' => 'required_with:options|string|max:255',
@@ -118,6 +149,13 @@ class ServiceController extends Controller
         'includes' => 'nullable|array',
         'includes.*.title_en' => 'required|string|max:255',
         'includes.*.title_ru' => 'required|string|max:255',
+        'media.main' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail1' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail2' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail3' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.detail4' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.banner' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:51200',
+        'media.video' => 'nullable|file|mimes:mp4,webm,mkv|max:51200',
     ]);
 
     $service->setTranslations('title', ['en' => $data['title_en'], 'ru' => $data['title_ru']]);
@@ -127,7 +165,13 @@ class ServiceController extends Controller
     $service->price = $data['price'];
     $service->currency = $data['currency'];
     $service->reservation_type_id = $data['reservation_type_id'] ?? null;
-    $service->media = $data['media'] ?? [];
+    // Получаем slug или генерируем его из названия
+    $slug = $data['slug'] ?? Str::slug($data['title_en'] ?? $data['title_ru']);
+    if (empty($slug)) {
+        // Если slug после всех манипуляций пустой — ставим id
+        $slug = $service->id;
+    }
+    $service->slug = $slug;
     $service->save();
 
     $service->options()->delete();
@@ -151,6 +195,27 @@ class ServiceController extends Controller
                     'ru' => $item['title_ru'],
                 ]
             ]);
+        }
+    }
+     // Медиа
+     if ($request->hasFile('media')) {
+        foreach ($request->file('media') as $type => $file) {
+            if ($file) {
+                // Найти старый медиафайл этого типа
+                $oldMedia = $service->mediaFiles()->where('type', $type)->first();
+                if ($oldMedia) {
+                    // Удалить файл из storage, если хочешь:
+                    // Storage::disk('public')->delete($oldMedia->path);
+                    $oldMedia->delete();
+                }
+                $mediaType = $type === 'video' ? 'video' : 'image';
+                $filePath = $file->store('services', 'public');
+                $service->mediaFiles()->create([
+                    'type' => $type,
+                    'media_type' => $mediaType,
+                    'path' => $filePath,
+                ]);
+            }
         }
     }
     return redirect()->route('services.index')->with('success', 'Услуга обновлена');

@@ -12,88 +12,180 @@ nav {
 </style>
 
     <!-- Hero Section -->
+<!-- Hero Section -->
 <div class="parallax">
     <section class="hero swiper hero-swiper">
         <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <div class="hero-background" style="background: url('https://thumbsnap.com/i/BUr92HgV.jpg?0520') center center no-repeat; position: absolute; top: 0; left: 0; width: 100%; height: 100%; scale: 1.2; background-size: cover; overflow: hidden;"></div>
-                <div class="slider-text hero-text">
-                    <span class="slider-main-title fade-in-section">BAKTYGUL BULATKALI</span>
-                    <a class="button-slider fade-in-section" href="{{ route('about') }}"><span class="button-slider-text">LEARN MORE</span></a>
-                    <div class="slider-text-div fade-in-section"><span class="slider-text">Fashion influencer with unique own vision in fashion industry advancing freshness and creativity</span></div>
-                    <span class="second-slider-title fade-in-section">Fashion stylist</span>
+            @forelse($homepage->slides ?? [] as $slide)
+                <div class="swiper-slide">
+                    <div class="hero-background"
+                         style="background: url('{{ Str::startsWith($slide['bg'], ['http://', 'https://']) ? $slide['bg'] : asset($slide['bg']) }}') center center no-repeat;
+                                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                scale: 1.2; background-size: cover; overflow: hidden;">
+                    </div>
+                    <div class="slider-text hero-text">
+                        <span class="slider-main-title fade-in-section">{{ $slide['title'] ?? '' }}</span>
+                        @if(!empty($slide['button_url']))
+                            <a class="button-slider fade-in-section" href="{{ Str::startsWith($slide['button_url'], ['http://', 'https://']) ? $slide['button_url'] : url($slide['button_url']) }}">
+                                <span class="button-slider-text">{{ $slide['button_text'] ?? 'LEARN MORE' }}</span>
+                            </a>
+                        @endif
+                        <div class="slider-text-div fade-in-section">
+                            <span class="slider-text">{{ $slide['description'] ?? '' }}</span>
+                        </div>
+                            <span class="second-slider-title fade-in-section">{{ $slide['subtitle'] ?? '' }}</span>
+                        <span class="second-slider-title fade-in-section">{{ $slide['bottom'] ?? '' }}</span>
+                    </div>
                 </div>
-            </div>
-          <div class="swiper-slide">
-                                  <div class="hero-background" style="background: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/379410672_845717123525682_6733083808991049778_n.jpg?_t=1747850731') center center no-repeat; position: absolute; top: 0; left: 0; width: 100%; height: 100%; scale: 1.2; background-size: cover; overflow: hidden; background-position-y: center;"></div>
-                <div class="slider-text hero-text">
-                    <span class="slider-main-title fade-in-section">TOUR ACTIONS</span>
-                    <div class="button-slider fade-in-section"><span class="button-slider-text">LEARN MORE</span></div>
-                    <div class="slider-text-div fade-in-section"><span class="slider-text">Seasonal discounts with VIP access to exclusive worldwide fashion events & runway shows</span></div>
-                    <span class="second-slider-title fade-in-section">Fashion stylist</span>
+            @empty
+                {{-- Дефолтный слайд 1 --}}
+                <div class="swiper-slide">
+                    <div class="hero-background"
+                         style="background: url('https://thumbsnap.com/i/BUr92HgV.jpg?0520') center center no-repeat;
+                                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                scale: 1.2; background-size: cover; overflow: hidden;">
+                    </div>
+                    <div class="slider-text hero-text">
+                        <span class="slider-main-title fade-in-section">BAKTYGUL BULATKALI</span>
+                        <a class="button-slider fade-in-section" href="{{ route('about') }}">
+                            <span class="button-slider-text">LEARN MORE</span>
+                        </a>
+                        <div class="slider-text-div fade-in-section">
+                            <span class="slider-text">Fashion influencer with unique own vision in fashion industry advancing freshness and creativity</span>
+                        </div>
+                        <span class="second-slider-title fade-in-section">Fashion stylist</span>
+                    </div>
                 </div>
-            </div>
+
+                {{-- Дефолтный слайд 2 --}}
+                <div class="swiper-slide">
+                    <div class="hero-background"
+                         style="background: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/379410672_845717123525682_6733083808991049778_n.jpg?_t=1747850731') center center no-repeat;
+                                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                scale: 1.2; background-size: cover; overflow: hidden; background-position-y: center;">
+                    </div>
+                    <div class="slider-text hero-text">
+                        <span class="slider-main-title fade-in-section">TOUR ACTIONS</span>
+                        <div class="button-slider fade-in-section">
+                            <span class="button-slider-text">LEARN MORE</span>
+                        </div>
+                        <div class="slider-text-div fade-in-section">
+                            <span class="slider-text">Seasonal discounts with VIP access to exclusive worldwide fashion events & runway shows</span>
+                        </div>
+                        <span class="second-slider-title fade-in-section">Fashion stylist</span>
+                    </div>
+                </div>
+            @endforelse
         </div>
     </section>
 </div>
 
-
-        <section class="about parallax-section">
-    <div class="about-background"></div>
+{{-- About Section --}}
+<section class="about parallax-section">
+    <div class="about-background">
+    </div>
     <div class="about-content">
         <h2>About Me</h2>
-        <p>Fashion stylist, personalized selection of clothing and accessories, boutique shopping assistance, and creation of individual looks tailored to your style and goals.</p>
-        <a class="button-slider-2 about-button" href="{{ route('about') }}"><span class="">DISCOVER</span></a>
+        <p>
+            {{ $homepage->about_text ?? 'Fashion stylist, personalized selection of clothing and accessories, boutique shopping assistance, and creation of individual looks tailored to your style and goals.' }}
+        </p>
+        <a class="button-slider-2 about-button" href="{{ route('about') }}">
+            <span class="">DISCOVER</span>
+        </a>
     </div>
+</section>
+
 </section>
 <div class="tour-list">
 </div>
-        <section class="services-grid">
-  <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/404938529_1586498311881129_6707843715254820543_n.jpg?_t=1747715957'); background-position-y: -54px;">
-    <div class="overlay">
-      <h3>PERSONAL | STYLING</h3>
-      <p>Transform your personal image with exclusive one-on-one styling sessions. From everyday elegance to red-carpet glamour, we curate complete looks that reflect your individuality, lifestyle, and aspirations..</p>
-      <a class="btn" href="{{ url('/service/personal-styling') }}">VIEW MORE</a>
-    </div>
-  </div>
-  <div class="service-box" style="background-image: url('https://lh3.google.com/u/0/d/14hGKfnDOTlXUYqXhyl5QZojY5BYtAaoi=w1607-h912-iv1?auditContext=prefetch');">
-    <div class="overlay">
-      <h3>FASHION | TOURS</h3>
-      <p>Discover Paris through a fashion lover’s eyes. Our private tours lead you to legendary designer boutiques, emerging concept stores, couture ateliers, and hidden vintage treasures, all tailored to your style and interests.</p>
-      <a class="btn" href="">VIEW MORE</a>
-    </div>
-  </div>
-  <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/image2.png?_t=1747708616'); background-position-y: 0px;">
-    <div class="overlay">
-      <h3>CONSULTATION</h3>
-      <p>a personalized session (in-person or online) where you receive expert guidance on style, wardrobe selection, and image strategy. The service helps you clarify your goals, refine your personal brand, and develop a harmonious, contemporary look tailored to your individuality</p>
-      <a class="btn" href="">VIEW MORE</a>
-    </div>
-  </div>
-  <div class="service-box" style="background-image: url('https://lh3.google.com/u/0/d/15JjTL4K_gYqGOljKZlOO8iVlXq1yfo9p=w1557-h912-iv1?auditContext=prefetch');">
-    <div class="overlay">
-      <h3>CONCIERGE | SERVICES</h3>
-      <p>Our bespoke concierge services ensure a seamless Parisian experience, including private transportation, reservations at exclusive venues, personalized itineraries, luxury shopping assistance, and round-the-clock support.</p>
-      <a class="btn" href="">VIEW MORE</a>
-    </div>
-  </div>
-  <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/405201231_382002000893665_5876306834808737193_n.jpg?_t=1747845690'); background-position-y: unset;">
-    <div class="overlay">
-      <h3>VINTAGE WEAR<br>JEWEL</h3>
-      <p>Embark on a curated journey to discover exceptional vintage fashion and rare jewelry pieces. We open doors to Paris’s best-kept secrets — prestigious vintage boutiques, private showrooms, and collectors’ hidden gems.</p>
-      <a class="btn" href="">VIEW MORE</a>
-    </div>
-  </div>
-  <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BF%D0%BA%D0%B0/image3.png?_t=1747708616');">
-    <div class="overlay">
-      <h3>PERSONAL | SHOPPER</h3>
-      <p>Personalized selection of clothing and accessories,<br>
-      boutique shopping assistance, and creation of individual<br>
-      looks tailored to your style and goals.</p>
-      <a href="#" class="btn">VIEW MORE</a>
-    </div>
-  </div>
+<section class="services-grid">
+  @php
+      $count = $services->count();
+  @endphp
+
+  @forelse($services as $i => $service)
+      @php
+          $mainMedia = $service->mediaFiles->where('type', 'main')->first();
+          $bg = $mainMedia && $mainMedia->path ? asset('storage/' . $mainMedia->path) : 'https://your-default-image.jpg';
+
+          // Класс и стили сетки
+          if ($count === 1) {
+                $style = 'width:100vw;height:100vh;display:block;';
+            } elseif ($count === 2) {
+                $style = 'width:50vw;height:100vh;display:inline-block;';
+            } elseif ($count === 3) {
+                $style = 'width:33.333vw;height:100vh;display:inline-block;';
+            } elseif ($count === 4) {
+                $style = 'width:50vw;height:50vh;display:inline-block;';
+            } elseif ($count === 5) {
+                // 2 сверху (по 50%) и 3 снизу (по 33.33%)
+                $style = $i < 2
+                    ? 'width:50vw;height:50vh;display:inline-block;'
+                    : 'width:33.333vw;height:50vh;display:inline-block;';
+            } elseif ($count === 6) {
+                $style = 'width:33.333vw;height:50vh;display:inline-block;';
+            } else {
+                // Для >6 — первый экран: 6 элементов по 3x2, остальные слайдером (понадобится JS, см. ниже)
+                $style = 'width:33.333vw;height:50vh;display:inline-block;';
+            }
+        @endphp
+
+      <div class="service-box" style="background-image: url('{{ $bg }}'); {{ $style }}">
+          <div class="overlay">
+              <h3>{{ mb_strtoupper($service->getTranslation('title', app()->getLocale())) }}</h3>
+              <p>{{ Str::limit($service->getTranslation('short_description', app()->getLocale()), 200) }}</p>
+              <a class="btn" href="{{ url('/service/personal-styling') }}">VIEW MORE</a>
+          </div>
+      </div>
+  @empty
+      {{-- Твои дефолтные карточки если нет услуг --}}
+      <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BA%D0%B0/404938529_1586498311881129_6707843715254820543_n.jpg?_t=1747715957'); background-position-y: -54px;">
+          <div class="overlay">
+              <h3>PERSONAL | STYLING</h3>
+              <p>Transform your personal image with exclusive one-on-one styling sessions. From everyday elegance to red-carpet glamour, we curate complete looks that reflect your individuality, lifestyle, and aspirations..</p>
+              <a class="btn" href="{{ url('/service/personal-styling') }}">VIEW MORE</a>
+          </div>
+      </div>
+      <div class="service-box" style="background-image: url('https://lh3.google.com/u/0/d/14hGKfnDOTlXUYqXhyl5QZojY5BYtAaoi=w1607-h912-iv1?auditContext=prefetch');">
+          <div class="overlay">
+              <h3>FASHION | TOURS</h3>
+              <p>Discover Paris through a fashion lover’s eyes. Our private tours lead you to legendary designer boutiques, emerging concept stores, couture ateliers, and hidden vintage treasures, all tailored to your style and interests.</p>
+              <a class="btn" href="">VIEW MORE</a>
+          </div>
+      </div>
+      <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BA%D0%B0/image2.png?_t=1747708616'); background-position-y: 0px;">
+          <div class="overlay">
+              <h3>CONSULTATION</h3>
+              <p>a personalized session (in-person or online) where you receive expert guidance on style, wardrobe selection, and image strategy. The service helps you clarify your goals, refine your personal brand, and develop a harmonious, contemporary look tailored to your individuality</p>
+              <a class="btn" href="">VIEW MORE</a>
+          </div>
+      </div>
+      <div class="service-box" style="background-image: url('https://lh3.google.com/u/0/d/15JjTL4K_gYqGOljKZlOO8iVlXq1yfo9p=w1557-h912-iv1?auditContext=prefetch');">
+          <div class="overlay">
+              <h3>CONCIERGE | SERVICES</h3>
+              <p>Our bespoke concierge services ensure a seamless Parisian experience, including private transportation, reservations at exclusive venues, personalized itineraries, luxury shopping assistance, and round-the-clock support.</p>
+              <a class="btn" href="">VIEW MORE</a>
+          </div>
+      </div>
+      <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BA%D0%B0/405201231_382002000893665_5876306834808737193_n.jpg?_t=1747845690'); background-position-y: unset;">
+          <div class="overlay">
+              <h3>VINTAGE WEAR<br>JEWEL</h3>
+              <p>Embark on a curated journey to discover exceptional vintage fashion and rare jewelry pieces. We open doors to Paris’s best-kept secrets — prestigious vintage boutiques, private showrooms, and collectors’ hidden gems.</p>
+              <a class="btn" href="">VIEW MORE</a>
+          </div>
+      </div>
+      <div class="service-box" style="background-image: url('https://cdn1.kdt.kz/files/sites/1713254119191113/files/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%D0%9F%D0%B0%D0%BA%D0%B0/image3.png?_t=1747708616');">
+          <div class="overlay">
+              <h3>PERSONAL | SHOPPER</h3>
+              <p>Personalized selection of clothing and accessories,<br>
+              boutique shopping assistance, and creation of individual<br>
+              looks tailored to your style and goals.</p>
+              <a href="#" class="btn">VIEW MORE</a>
+          </div>
+      </div>
+  @endforelse
 </section>
+
 
 
         <section class="tour-video-slide swiper tour-swiper">
@@ -208,7 +300,16 @@ nav {
 
 
     </div>
-
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        new Swiper('.services-swiper', {
+          slidesPerView: 1,
+          loop: true,
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+        });
+      });
+      </script>
     <!-- Твои подключения JS-слайдеров и кастомные скрипты -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>

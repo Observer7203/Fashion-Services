@@ -4,6 +4,13 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use App\Models\Service;
+use App\Observers\ServiceObserver;
+use App\Models\Tour;
+use App\Observers\TourObserver;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,17 +24,12 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     */public function boot(): void
-{
-    $locale = session('locale', config('app.locale'));
+ */
 
-    // Установка языка
-    app()->setLocale($locale);
-
-    // Передача текущего языка во все вьюшки
-    view()->composer('*', function ($view) use ($locale) {
-        $view->with('siteLang', $locale);
-    });
-}
+ public function boot(): void
+ {
+     Service::observe(ServiceObserver::class);
+     Tour::observe(TourObserver::class);
+ }
 
 }

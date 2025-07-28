@@ -19,6 +19,15 @@ class StoreController extends Controller
     public function show($slug)
     {
         $product = Product::where('slug', $slug)->firstOrFail();
-        return view('store.show', compact('product'));
-    }
+    
+        $view = match ($product->type) {
+            'jewelry' => 'partials.store.item-jewelry',
+            'wear' => 'partials.store.item-wear',
+            'tour' => 'partials.store.item-tour',
+            'service' => 'partials.store.item-service',
+            default => 'store.show',
+        };
+    
+        return view($view, compact('product'));
+    }    
 }

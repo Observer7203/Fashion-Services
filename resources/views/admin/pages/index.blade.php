@@ -13,16 +13,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($pages as $page)
-                <tr>
-                    <td class="py-2 px-4 border-b">{{ $page->title }}</td>
-                    <td class="py-2 px-4 border-b">{{ ucfirst($page->status) }}</td>
-                    <td class="py-2 px-4 border-b">
-                        <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600 hover:underline">Редактировать</a>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
+    @foreach($pages as $page)
+        <tr>
+            <td class="py-2 px-4 border-b">
+                {{ $page->title }}
+            </td>
+            <td class="py-2 px-4 border-b">
+                {{ ucfirst($page->status) }}
+            </td>
+            <td class="py-2 px-4 border-b">
+                @if(isset($page->is_homepage) && $page->is_homepage)
+                    <a href="{{ route('admin.homepage.edit') }}" class="text-blue-600 hover:underline">Редактировать</a>
+                @else
+                    <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600 hover:underline">Редактировать</a>
+                @endif
+            </td>
+        </tr>
+    @endforeach
+</tbody>
     </table>
 </div>
 @endsection

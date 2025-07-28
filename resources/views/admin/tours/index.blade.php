@@ -205,7 +205,36 @@ input::placeholder {
             },
             confirmMassDelete() {
                 if (confirm('Вы уверены, что хотите удалить выбранные туры?')) {
-                    alert('Массовое удаление не настроено — реализуйте через API или форму.');
+                    // Создаём и отправляем форму вручную
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route('tours.massDestroy') }}';
+
+                    // Добавляем CSRF
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    form.appendChild(csrf);
+
+                    // Добавляем метод DELETE
+                    const method = document.createElement('input');
+                    method.type = 'hidden';
+                    method.name = '_method';
+                    method.value = 'DELETE';
+                    form.appendChild(method);
+
+                    // Добавляем ID-шники
+                    this.selected.forEach(id => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'ids[]';
+                        input.value = id;
+                        form.appendChild(input);
+                    });
+
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             }
         };

@@ -224,7 +224,48 @@
 
     <!-- Services Grid -->
      <section class="services-section" style="margin-top: 100px; margin-bottom: 50px;">
-
+        @forelse($services as $i => $service)
+    @php
+        $lang = app()->getLocale();
+        $mainMedia = $service->mediaFiles->where('type', 'main')->first();
+        $img = $mainMedia && $mainMedia->path ? asset('storage/' . $mainMedia->path) : 'https://cdn1.kdt.kz/files/sites/1713254119191113/files/404938529_1586498311881129_6707843715254820543_n.jpg?_t=1747715957';
+        $title = mb_strtoupper($service->getTranslation('title', $lang));
+        $subtitle = $service->getTranslation('subtitle', $lang); // теперь не только fr!
+        $desc = $service->getTranslation('short_description', $lang);
+    @endphp
+    <div class="service-row fade-in-section{{ $i % 2 == 1 ? ' reverse' : '' }}">
+        <div class="service-text fade-in-section">
+            <div class="service-from fade-in-section">From The Fashion</div>
+            <div class="service-title fade-in-section">{{ $title }}</div>
+            <div class="service-subtitle fade-in-section">{{ $subtitle }}</div>
+            <div class="service-divider fade-in-section"></div>
+            <div class="service-desc fade-in-section">{{ $desc }}</div>
+            <a class="service-btn fade-in-section" href="{{ route('services_2.show', ['locale' => $lang, 'slug' => $service->slug ?: $service->id]) }}">
+                {{ __('read more') }}
+            </a>
+        </div>
+        <div class="service-image fade-in-section">
+            <img src="{{ $img }}" alt="{{ $title }}">
+        </div>
+    </div>
+    @empty
+        <!-- Дефолтные блоки, если услуг нет -->
+        <div class="service-row fade-in-section">
+            <div class="service-text fade-in-section">
+                <div class="service-from fade-in-section">From The Fashion</div>
+                <div class="service-title fade-in-section">PERSONAL STYLING</div>
+                <div class="service-subtitle fade-in-section">Candid Enthusiasm from the Summer</div>
+                <div class="service-divider fade-in-section"></div>
+                <div class="service-desc fade-in-section">
+                    Transform your personal image with exclusive one-on-one styling sessions.
+                    From everyday elegance to red-carpet glamour, we curate complete looks that reflect your individuality, lifestyle, and aspirations.
+                </div>
+                <a class="service-btn fade-in-section" href="{{ url('/service/personal-styling') }}">read more</a>
+            </div>
+            <div class="service-image fade-in-section">
+                <img src="https://cdn1.kdt.kz/files/sites/1713254119191113/files/404938529_1586498311881129_6707843715254820543_n.jpg?_t=1747715957">
+            </div>
+        </div>
         <!-- Первый блок -->
         <div class="service-row fade-in-section">
             <div class="service-text fade-in-section">
@@ -331,7 +372,7 @@
         </div>
 
         <!-- Третий, четвертый и далее блоки — копируй по аналогии, меняй текст и картинки -->
-
+        @endforelse
     </section>
 
         <script>

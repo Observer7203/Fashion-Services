@@ -4,22 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Translatable\HasTranslations;
+use App\Models\Tour;
 
 class TourMedia extends Model
 {
-    use HasTranslations;
-
-    public $translatable = ['title'];
-
-    protected $fillable = ['tour_id', 'title', 'price'];
-
-    protected $casts = [
-        'title' => 'json',
+    protected $fillable = [
+        'tour_id',
+        'path',
+        'type',
+        'role',
+        'mime',
+        'sort',
     ];
+
+    protected $appends = ['url'];
 
     public function tour(): BelongsTo
     {
         return $this->belongsTo(Tour::class);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return asset('storage/' . $this->path);
     }
 }

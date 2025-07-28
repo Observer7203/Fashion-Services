@@ -9,7 +9,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Store\StoreController;
-use App\Http\Controllers\Store\BucketController as StoreBucketController;
+use App\Http\Controllers\BucketController as StoreBucketController;
 use App\Http\Controllers\Store\OrderController as StoreOrderController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\Admin\AdminController;
@@ -23,8 +23,15 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\BlockController as AdminBlockController;
 use App\Http\Controllers\Api\ReservationTypeApiController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\Admin\HomepageController as HomepageController;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Middleware\LocaleFromUrl;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\CheckoutController;
 
 
 
@@ -41,15 +48,24 @@ Route::get('/events/pfw', function () {
 });
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
-Route::get('/services', function () { return view('services'); })->name('services');
-Route::get('/services/{slug}', [ServiceController::class, 'show']);
-Route::get('/tours', function () { return view('tours'); })->name('tours');
-Route::get('/tours/{slug}', [TourController::class, 'show']);
+Route::get('/services', [\App\Http\Controllers\ServiceController::class, 'index'])->name('services');
+
+
+Route::get('/tours/{slug}', [TourController::class, 'show'])->name('tours_2.show');
 Route::get('/events', function () { return view('events'); })->name('events');
 Route::get('/events/{slug}', [AdminEventController::class, 'show']);
 Route::get('/store', [StoreController::class, 'index'])->name('store.index');
 Route::get('/store/{slug}', [StoreController::class, 'show']);
 Route::get('/contacts', function () { return view('contacts'); })->name('contacts');
+
+Route::get('/tours/pfwt', function () {
+    return view('tour');
+})->name('tour.pfwt');
+
+Route::get('/events/pfw', function () {
+    return view('event');
+})->name('event.pfw');
+
 
 Route::get('/service/personal-styling', function () {
     return view('service');
@@ -58,25 +74,43 @@ Route::get('/instagram', function () {
     return view('instagram');
 });
 
-Route::post('/set-lang', function (\Illuminate\Http\Request $request) {
-    $lang = $request->input('lang');
-    if (in_array($lang, ['en', 'ru'])) {
-        session(['locale' => $lang]);
-        app()->setLocale($lang);
-    }
-    return response()->json(['success' => true]);
-})->name('setlang');
+// routes/web.php
+Route::prefix('{locale}')
+    ->where(['locale' => 'ru|en'])
+    ->middleware([LocaleFromUrl::class])
+    ->group(function () {
+        Route::get('/admin/services', [\App\Http\Controllers\Admin\ServiceController::class, 'index'])->name('services.index');
+        Route::get('/services', [ServiceController::class, 'index'])->name('services');
+        Route::get('/services/{slug}', [\App\Http\Controllers\ServiceController::class, 'show'])->name('services_2.show');
+        Route::get('/tours/{slug}', [TourController::class, 'show'])->name('tours_2.show');
+        Route::get('/tours', [TourController::class, 'index'])->name('tours_2.index');
+        // ... и все остальные маршруты, где нужен язык в URL
+    });
 
+
+Route::get('/test-session', function () {
+    session(['locale' => 'en']);
+    return session()->get('locale');
+});
 
 
 Route::prefix('store')->group(function () {
-    Route::get('/bucket', [StoreBucketController::class, 'index'])->name('store.bucket.index');
-    Route::post('/bucket/add/{productId}', [StoreBucketController::class, 'add'])->name('store.bucket.add');
-    Route::delete('/bucket/remove/{productId}', [StoreBucketController::class, 'remove'])->name('store.bucket.remove');
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
     Route::get('/{slug}', [StoreController::class, 'show'])->name('store.show');
-    Route::post('/checkout', [StoreOrderController::class, 'store'])->name('store.checkout.store');
+//    Route::post('/checkout', [StoreOrderController::class, 'store'])->name('store.checkout.store');
 });
+
+Route::get('/bucket', [\App\Http\Controllers\BucketController::class, 'index'])->name('bucket.index');
+Route::post('/bucket/add', [\App\Http\Controllers\BucketController::class, 'add'])->name('bucket.add');
+Route::delete('/bucket/remove/{productId}', [\App\Http\Controllers\BucketController::class, 'remove'])->name('bucket.remove');
+
+// Страница checkout
+Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout.show');
+// Обработка заказа
+// Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/checkout/thankyou/{order}', [\App\Http\Controllers\CheckoutController::class, 'thankyou'])->name('checkout.thankyou');
+Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+
 
 Route::resource('/reservation-types', ReservationTypeController::class)
     ->except(['show'])
@@ -142,10 +176,57 @@ Route::put('forms/{form}/fields/{field}', [\App\Http\Controllers\Admin\FormField
 Route::delete('forms/{form}/fields/{field}', [\App\Http\Controllers\Admin\FormFieldController::class, 'destroy'])->name('forms.fields.destroy');
 Route::get('forms/{form}/fields/create', [\App\Http\Controllers\Admin\FormFieldController::class, 'create'])->name('forms.fields.create');
 Route::get('forms/{form}/fields/{field}/edit', [\App\Http\Controllers\Admin\FormFieldController::class, 'edit'])->name('forms.fields.edit');
-
+Route::delete('/tours/mass-destroy', [AdminTourController::class, 'massDestroy'])->name('tours.massDestroy');
+Route::post('/media/upload', [AdminMediaController::class, 'upload'])->name('admin.media.upload');
+Route::delete('/media/delete', [AdminMediaController::class, 'delete'])->name('admin.media.delete');
 // Ответы на формы
 Route::get('form-responses', [\App\Http\Controllers\Admin\FormResponseController::class, 'index'])->name('form_responses.index');
 Route::get('form-responses/{response}', [\App\Http\Controllers\Admin\FormResponseController::class, 'show'])->name('form_responses.show');
+Route::get('/homepage', [HomepageController::class, 'edit'])->name('admin.homepage.edit');
+Route::post('/homepage', [HomepageController::class, 'update'])->name('admin.homepage.update');
+Route::post('/homepage/upload', [HomepageController::class, 'upload'])->name('admin.upload');
+Route::get('about/edit', [\App\Http\Controllers\Admin\AboutPageController::class, 'edit'])->name('admin.about.edit');
+Route::post('about/update', [\App\Http\Controllers\Admin\AboutPageController::class, 'update'])->name('admin.about.update');
+
+
+Route::get('/regen-products', function () {
+    foreach (\App\Models\Service::all() as $s) {
+        if (!\App\Models\Product::where('service_id', $s->id)->exists()) {
+            \App\Models\Product::create([
+                'title' => $s->title,
+                'slug'  => \Illuminate\Support\Str::slug($s->title) . '-' . $s->id,
+                'description' => $s->description,
+                'price' => $s->price,
+                'media' => $s->media,
+                'category' => 'service',
+                'type' => 'service',
+                'stock' => 999,
+                'status' => $s->status ?? 'active',
+                'service_id' => $s->id
+            ]);
+        }
+    }
+
+    foreach (\App\Models\Tour::all() as $t) {
+        if (!\App\Models\Product::where('tour_id', $t->id)->exists()) {
+            \App\Models\Product::create([
+                'title' => $t->title,
+                'slug'  => \Illuminate\Support\Str::slug($t->title) . '-' . $t->id,
+                'description' => $t->description,
+                'price' => $t->price,
+                'media' => $t->media,
+                'category' => 'tour',
+                'type' => 'tour',
+                'stock' => 999,
+                'status' => $t->status ?? 'active',
+                'tour_id' => $t->id
+            ]);
+        }
+    }
+
+    return '✅ Продукты сгенерированы';
+});
+
 });
 
 Route::prefix('reservation-types/{type}/steps')->name('reservation-types.steps.')->group(function () {
@@ -156,6 +237,7 @@ Route::prefix('reservation-types/{type}/steps')->name('reservation-types.steps.'
     Route::put('/{step}', [ReservationStepTemplateController::class, 'update'])->name('update');
     Route::delete('/{step}', [ReservationStepTemplateController::class, 'destroy'])->name('destroy');
 });
+
 
 Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect']);
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);

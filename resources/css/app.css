@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'swiper/css/bundle';
+
 body {
     font-family: 'Raleway', sans-serif;
 }
